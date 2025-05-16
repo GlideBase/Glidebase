@@ -1,5 +1,58 @@
 <!DOCTYPE html>
 <html lang="de">
+    <div class="login-box">
+    <h2>Registrieren</h2>
+    <form id="signup-form">
+        <input type="email" id="signup-email" placeholder="E-Mail-Adresse" required>
+        <input type="password" id="signup-password" placeholder="Passwort" required>
+        <button type="submit">Registrieren</button>
+    </form>
+</div>
+    <script>
+  // Supabase-Konfiguration (ersetzen durch deine)
+  const SUPABASE_URL = 'https://dein-projekt.supabase.co';
+  const SUPABASE_ANON_KEY = 'dein-anon-key';
+
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // LOGIN
+  document.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.querySelector('input[type="email"]').value;
+    const password = document.querySelector('input[type="password"]').value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      alert("Login fehlgeschlagen: " + error.message);
+    } else {
+      alert("Erfolgreich eingeloggt als " + data.user.email);
+    }
+  });
+
+  // SIGNUP
+  document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      alert("Registrierung fehlgeschlagen: " + error.message);
+    } else {
+      alert("Registrierung erfolgreich! Bitte E-Mail bestätigen.");
+    }
+  });
+</script>
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>

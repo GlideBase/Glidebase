@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlideBase – Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f2f6ff;
+      color: #1e3a5f;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1e3a5f;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Benutzerdaten – GlideBase</h1>
+  <table id="user-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Verein</th>
+        <th>Rolle</th>
+        <th>Flugstunden</th>
+        <th>Registriert am</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button onclick="logout()">Logout</button>
+
+  <script>
+    // Supabase Setup
+    const SUPABASE_URL = 'https://DEIN_SUPABASE_URL.supabase.co';
+    const SUPABASE_ANON_KEY = 'DEIN_SUPABASE_ANON_KEY';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Lade alle Benutzerdaten
+    async function loadUserData() {
+      const { data, error } = await supabase.from('users_data').select('*');
+
+      if (error) {
+        console.error('Fehler beim Laden:', error.message);
+        return;
+      }
+
+      const tbody = document.querySelector('#user-table tbody');
+      tbody.innerHTML = '';
+
+      data.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user.name || ''}</td>
+          <td>${user.verein || ''}</td>
+          <td>${user.rolle || ''}</td>
+          <td>${user.flugstunden || 0}</td>
+          <td>${new Date(user.created_at).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Logout
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+
+    // Auth check und Daten laden
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        alert("Nicht eingeloggt. Du wirst weitergeleitet.");
+        window.location.href = 'index.html';
+      } else {
+        loadUserData();
+      }
+    })();
+  </script>
+</body>
+</html>

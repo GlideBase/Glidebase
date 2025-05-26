@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlideBase Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f2f6ff;
+      color: #1e3a5f;
+      padding: 0;
+      margin: 0;
+    }
+    header {
+      background: #1e3a5f;
+      color: white;
+      text-align: center;
+      padding: 30px 10px;
+    }
+    header h1 {
+      margin: 10px 0 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1e3a5f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .status {
+      text-align: center;
+      margin-top: 10px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="glidebase.png" alt="GlideBase Logo" style="max-height: 80px" />
+    <h1>GlideBase</h1>
+    <p>Die zentrale Datenbank für Segelflieger-Vereine</p>
+  </header>
+
+  <div class="container">
+    <h2>Login</h2>
+    <input type="email" id="login-email" placeholder="E-Mail-Adresse" required />
+    <input type="password" id="login-password" placeholder="Passwort" required />
+    <button onclick="login()">Einloggen</button>
+    <div class="status" id="login-status"></div>
+  </div>
+
+  <div class="container">
+    <h2>Registrieren</h2>
+    <input type="email" id="signup-email" placeholder="E-Mail-Adresse" required />
+    <input type="password" id="signup-password" placeholder="Passwort (min. 6 Zeichen)" required />
+    <button onclick="signup()">Registrieren</button>
+    <div class="status" id="signup-status"></div>
+  </div>
+
+  <script>
+    // 🔐 Supabase-Zugangsdaten hier einfügen
+    const SUPABASE_URL = 'https://DEIN_SUPABASE_URL.supabase.co';
+    const SUPABASE_ANON_KEY = 'DEIN_SUPABASE_ANON_KEY';
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Login-Funktion
+    async function login() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const status = document.getElementById('login-status');
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        status.textContent = "❌ Fehler: " + error.message;
+      } else {
+        status.style.color = "green";
+        status.textContent = "✅ Erfolgreich eingeloggt!";
+        console.log(data);
+        // Weiterleitung z.B. auf dashboard.html
+        // window.location.href = 'dashboard.html';
+      }
+    }
+
+    // Registrierung
+    async function signup() {
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const status = document.getElementById('signup-status');
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      if (error) {
+        status.textContent = "❌ Fehler: " + error.message;
+      } else {
+        status.style.color = "green";
+        status.textContent = "✅ Registrierung erfolgreich! Bitte E-Mail bestätigen.";
+        console.log(data);
+      }
+    }
+  </script>
+</body>
+</html>
